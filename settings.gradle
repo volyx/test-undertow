@@ -1,2 +1,3 @@
 rootProject.name = 'test-undertow'
 
+include 'rest', 'ui'

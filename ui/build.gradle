@@ -1,0 +1,22 @@
+plugins {
+    id "com.moowork.node" version "1.2.0"
+}
+
+group 'test'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'com.moowork.node'
+
+node {
+    version = '6.11.0'
+    download = true
+}
+
+task webpack( type: NodeTask, dependsOn: 'yarn' ) {
+    script = file('node_modules/webpack/bin/webpack.js')
+}
+
+task webpackDev( type: NodeTask, dependsOn: 'yarn' ) {
+    script = file('node_modules/webpack/bin/webpack.js')
+    args = ["--progress", "--watch"]
+}

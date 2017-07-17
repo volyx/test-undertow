@@ -31,8 +31,8 @@ public class VirtualHostServer {
 
     public static void main(String[] args) {
         NameVirtualHostHandler handler = Handlers.virtualHost()
-                .addHost("localhost", VirtualHostServer.redirectToHost("www.localhost"))
-                .addHost("www.localhost", ROUTES);
+                .addHost("example.com", VirtualHostServer.redirectToHost("www.example.com"))
+                .addHost("www.example.com", ROUTES);
         SimpleServer server = SimpleServer.simpleServer(handler);
         server.start();
     }
