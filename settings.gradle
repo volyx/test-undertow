@@ -1,3 +1,4 @@
 rootProject.name = 'test-undertow'
 
-include 'rest', 'ui'
+include 'rzd', 'rest', 'ui'
+

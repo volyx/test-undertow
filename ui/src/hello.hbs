@@ -7,5 +7,42 @@
                 <p>Edit the name by modifying the <code>?name=</code> query parameter. Empty string or a non existent parameter defaults to world.</p>
             </div>
         </div>
+
+        <h2> Фильтры</h2>
+        <table style="width:100%">
+            <tr>
+                <th>Номер поезда</th>
+                <th>Откуда</th>
+                <th>Куда</th>
+                <th>Когда</th>
+                <th>Места</th>
+            </tr>
+
+            {{#filters}}
+                <tr>
+
+                    <td>{{trainCode}}</td>
+                    <td>{{from}}</td>
+                    <td>{{to}}</td>
+                    <td>{{when}}</td>
+                    <td>{{seatTypes}}</td>
+                </tr>
+            {{/filters}}
+
+
+
+        </table>
+
+
+        {{#trains}}
+            <div>
+
+                <div>{{@key}}</div>
+                <div>{{value}}</div>
+
+            </div>
+        {{/trains}}
+
+
     {{/inline}}
 {{/ static/templates/src/common/_base-layout}}
