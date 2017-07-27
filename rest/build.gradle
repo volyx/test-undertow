@@ -1,14 +1,32 @@
 group 'test'
 version '1.0-SNAPSHOT'
 
-
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+    }
+}
 apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+mainClassName = 'com.example.WebpackServer'
 
 sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
 }
+
+task copyAsests(type: Copy) {
+    from '../ui/assets'
+    into 'build/resources/main/assets'
+}
+
+build.dependsOn copyAsests
 
 dependencies {
 
