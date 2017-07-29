@@ -55,6 +55,11 @@ public class NotificationService implements INotificationService {
         return null;
     }
 
+    @Override
+    public Map<Long, String> getLogs() {
+        return null;
+    }
+
     private boolean canNotify() {
         if (lastNotifiedMillis + ServiceIsAvailableNotificationTimeoutMs < System.currentTimeMillis()) {
             lastNotifiedMillis = System.currentTimeMillis();

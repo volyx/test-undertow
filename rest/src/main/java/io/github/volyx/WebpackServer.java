@@ -54,6 +54,7 @@ public class WebpackServer {
         Response response = Response.create()
                 .with("filters", Injector.get(Options.class).filters)
                 .with("trains", Injector.get(INotificationService.class).getTrains())
+                .with("logs", Injector.get(INotificationService.class).getLogs())
                 .with("name", name);
         Exchange.body().sendHtmlTemplate(exchange, "static/templates/src/hello", response);
     }

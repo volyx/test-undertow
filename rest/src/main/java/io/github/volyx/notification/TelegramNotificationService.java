@@ -15,6 +15,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +32,8 @@ public class TelegramNotificationService implements INotificationService {
             .entries(50_000)
             .create();
 
+    private Map<Long, String> log = new HashMap<>();
+
     @Override
     public void notifySuccess(TrainFilter filter, TrainSearchResult result) {
         for (Train train : result.getItems()) {
@@ -38,10 +42,14 @@ public class TelegramNotificationService implements INotificationService {
 
             if (car == null) {
                 cars.put(train.getTrainId(), currentCar);
+                log.put(System.currentTimeMillis(), String.format("%s %s мест", train.getTrainId(), currentCar.freeSeats));
                 continue;
             }
 
             if (currentCar.freeSeats < car.freeSeats) {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                long date = System.currentTimeMillis();
+                log.put(date, String.format("%s %s %s мест", simpleDateFormat.format(new Date(date)), train.getTrainId(), currentCar.freeSeats));
                 System.out.println("Новые места " + train);
             }
         }
@@ -65,6 +73,11 @@ public class TelegramNotificationService implements INotificationService {
             map.put(entry.getKey().toString(), entry.getValue());
         }
         return map;
+    }
+
+    @Override
+    public  Map<Long, String> getLogs() {
+        return log;
     }
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");

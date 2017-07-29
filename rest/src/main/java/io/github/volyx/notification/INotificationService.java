@@ -16,4 +16,6 @@ public interface INotificationService {
     void notifyServiceIsDown();
 
     Map<String, Car> getTrains();
+
+    Map<Long, String> getLogs();
 }
