@@ -2,6 +2,7 @@ package io.github.volyx;
 
 import io.github.volyx.data.providers.http.StationService;
 import io.github.volyx.notification.INotificationService;
+import io.github.volyx.notification.NotificationService;
 import io.github.volyx.notification.TelegramNotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,11 +46,14 @@ public class WebpackServer {
     // Render hello {name} page based on the name query param.
     public static void hello(HttpServerExchange exchange) {
         exception(exchange);
+
         String name = Exchange.queryParams()
                 .queryParam(exchange, "name")
                 .filter(s -> !Strings.isNullOrEmpty(s))
                 .orElse("world");
         Response response = Response.create()
+                .with("filters", Injector.get(Options.class).filters)
+                .with("trains", Injector.get(INotificationService.class).getTrains())
                 .with("name", name);
         Exchange.body().sendHtmlTemplate(exchange, "static/templates/src/hello", response);
     }
@@ -116,7 +120,9 @@ public class WebpackServer {
 //            return gson.toJson(stations);
 //        });
 
-
+        Injector.put(Options.class, opts);
+        Injector.put(INotificationService.class, notificationService);
+        Injector.put(StationService.class, stationService);
 
 
         SimpleServer server = SimpleServer.simpleServer(wrapWithMiddleware(ROUTES));

@@ -47,11 +47,11 @@ public class CustomHandlers {
         ResourceManager resourceManager = null;
         if (Env.LOCAL == Env.get()) {
             String path = AssetsConfig.assetsRoot() + "/" + prefix;
-            log.debug("using local file resource manager {}", path);
+            log.info("using local file resource manager {}", path);
             resourceManager = new FileResourceManager(new File(path), 1024 * 1024);
         } else {
-            log.debug("using classpath file resource manager");
-            resourceManager = new ClassPathResourceManager(CustomHandlers.class.getClassLoader(), prefix);
+            log.info("using classpath file resource manager");
+            resourceManager = new ClassPathResourceManager(CustomHandlers.class.getClassLoader(), AssetsConfig.assetsRoot());
         }
         ResourceHandler handler = new ResourceHandler(resourceManager);
         handler.setCacheTime((int)TimeUnit.HOURS.toSeconds(4));

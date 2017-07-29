@@ -1,5 +1,7 @@
-FROM	maven:3-jdk-8-onbuild
+FROM	openjdk:8-jre-alpine
 
-COPY . /usr/src/rzd
+COPY rest/build/libs/rest-1.0-SNAPSHOT-all.jar /
+COPY rest/build/resources/main/request.config /
 
-ENTRYPOINT ["java", "-jar", "/usr/src/app/target/RzdParser-1.0-SNAPSHOT-jar-with-dependencies.jar", "-config", "/usr/src/app/request.config"]
+EXPOSE 8080:8080
+ENTRYPOINT ["java", "-Denv=prod", "-jar", "rest-1.0-SNAPSHOT-all.jar", "-config", "request.config"]

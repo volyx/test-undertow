@@ -41,11 +41,11 @@ public class TelegramNotificationService implements INotificationService {
                 continue;
             }
 
-            if (currentCar.freeSeats > car.freeSeats) {
-                logger.info("Новые места " + train);
+            if (currentCar.freeSeats < car.freeSeats) {
+                System.out.println("Новые места " + train);
             }
         }
-//        System.out.println("Find tickets" + result);
+        System.out.println("Find tickets" + result);
     }
 
     @Override

@@ -13,7 +13,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
 
-mainClassName = 'com.example.WebpackServer'
+mainClassName = 'io.github.volyx.WebpackServer'
 
 sourceCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
@@ -27,6 +27,12 @@ task copyAsests(type: Copy) {
     into 'build/resources/main/assets'
 }
 
+task copyIdea(type: Copy) {
+    from '../ui/assets'
+    into 'out/production/classes/assets'
+}
+
+copyAsests.dependsOn copyIdea
 build.dependsOn copyAsests
 
 dependencies {

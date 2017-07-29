@@ -89,7 +89,7 @@ public class TrainService implements ITrainService {
             for (int j = 0; j < list.length(); j++) {
                 JSONObject trainItem = list.getJSONObject(j);
                 List<Car> allSeats = parseSeatsByClass(trainItem.getJSONArray("cars"));
-                String trainCode = trainItem.getString("number");
+                String trainCode = trainItem.getString("number2");
                 if (!filter.isFilteredByTrainCode() || trainCode.toLowerCase().contains(filter.getTrainCode().toLowerCase())) {
                     List<Car> filteredSeats = allSeats.stream().filter(c-> filter.getSeatTypes().contains(c.typeLoc)).collect(Collectors.toList());
                     if (filteredSeats.size() > 0) {

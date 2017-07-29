@@ -36,6 +36,9 @@ public class StationService {
             return stationCache.get(name);
         }
         final Station[] stations = getStations(name);
+        if (stations == null) {
+            throw new SearchException("Station not found");
+        }
         for (Station station : stations) {
             if (station.n.toLowerCase().equals(name.toLowerCase())) {
                 int id = station.c;

@@ -52,7 +52,7 @@
     <logger name="com.zaxxer.hikari" level="DEBUG"/>
 
     <!-- Turn on debug logging for all loggers under com.stubbornjava -->
-    <logger name="com.stubbornjava" level="DEBUG"/>
+    <logger name="io.github.volyx" level="info"/>
 
     <!--
     Assume we have a com.stubbornjava.secrets.MySecretPasswordClass.Java class.

@@ -16,6 +16,7 @@ import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class Templating {
         // Don't cache locally, makes development annoying
         if (Env.LOCAL != Env.get()) {
             builder.withCaching()
-                    .withResourceLoaders();
+                    .withResourceLoaders(AssetsConfig.assetsRoot());
         } else {
             String root = AssetsConfig.assetsRoot();
             builder.withLocalResourceLoaders(root);
@@ -105,14 +106,14 @@ public class Templating {
 
         }
 
-        public Builder withResourceLoaders() {
+        public Builder withResourceLoaders(@Nonnull String prefix) {
             log.debug("using resource loaders");
-            loaders.add(new ClassPathTemplateLoader());
+            loaders.add(new ClassPathTemplateLoader(TemplateLoader.DEFAULT_PREFIX + prefix));
             loaders.add(new ClassPathTemplateLoader(TemplateLoader.DEFAULT_PREFIX, ".sql"));
             return this;
         }
 
-        public Builder withLocalResourceLoaders(String root) {
+        public Builder withLocalResourceLoaders(@Nonnull String root) {
             log.debug("using local loaders");
             loaders.add(new FileTemplateLoader(root));
             loaders.add(new FileTemplateLoader(root, ".sql"));
