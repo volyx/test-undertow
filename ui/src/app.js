@@ -9,3 +9,8 @@ import './app.scss';
 import 'bootstrap/js/src/dropdown.js';
 
 
+// $('body').on('click', function(event) {
+//     console.log(event);
+// });
+
+
