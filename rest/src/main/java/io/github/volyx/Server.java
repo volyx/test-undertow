@@ -1,9 +1,14 @@
 package io.github.volyx;
 
-import io.github.volyx.data.providers.http.StationService;
-import io.github.volyx.notification.INotificationService;
-import io.github.volyx.notification.NotificationService;
-import io.github.volyx.notification.TelegramNotificationService;
+import com.github.scribejava.apis.VkontakteApi;
+import io.github.volyx.handlers.SecurityHandler;
+import org.pac4j.core.client.Clients;
+import org.pac4j.core.config.Config;
+import org.pac4j.http.client.direct.ParameterClient;
+import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator;
+import org.pac4j.oauth.client.OAuth20Client;
+import org.pac4j.oauth.config.OAuth20Configuration;
+import org.pac4j.oauth.profile.vk.VkProfileDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,11 +23,12 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.Function;
 
 import static io.github.volyx.CustomHandlers.timed;
 
-public class WebpackServer {
-    private static final Logger log = LoggerFactory.getLogger(WebpackServer.class);
+public class Server {
+    private static final Logger log = LoggerFactory.getLogger(Server.class);
 
     // {{start:routes}}
     // Simple not found 404 page
@@ -52,11 +58,29 @@ public class WebpackServer {
                 .filter(s -> !Strings.isNullOrEmpty(s))
                 .orElse("world");
         Response response = Response.create()
-                .with("filters", Injector.get(Options.class).filters)
-                .with("trains", Injector.get(INotificationService.class).getTrains())
-                .with("logs", Injector.get(INotificationService.class).getLogs())
+//                .with("filters", Injector.get(Options.class).filters)
+//                .with("trains", Injector.get(INotificationService.class).getTrains())
+//                .with("logs", Injector.get(INotificationService.class).getLogs())
                 .with("name", name);
         Exchange.body().sendHtmlTemplate(exchange, "static/templates/src/hello", response);
+    }
+
+    // / Render hello {name} page based on the name query param.
+    public static void unauthorized(HttpServerExchange exchange) {
+        exception(exchange);
+
+        String name = Exchange.queryParams()
+                .queryParam(exchange, "name")
+                .filter(s -> !Strings.isNullOrEmpty(s))
+                .orElse("world");
+        Response response = Response.create()
+//                .with("filters", Injector.get(Options.class).filters)
+//                .with("trains", Injector.get(INotificationService.class).getTrains())
+//                .with("logs", Injector.get(INotificationService.class).getLogs())
+                .with("title", "unauthorized")
+                .with("name", name);
+
+        Exchange.body().sendHtmlTemplate(exchange, "static/templates/src/unauthorized", response);
     }
 
     // Helper function to forcibly throw an exception whenever the query
@@ -72,7 +96,7 @@ public class WebpackServer {
     // We are currently handling all exceptions the same way
     private static HttpHandler exceptionHandler(HttpHandler next) {
         return CustomHandlers.exception(next)
-                .addExceptionHandler(Throwable.class, WebpackServer::error);
+                .addExceptionHandler(Throwable.class, Server::error);
     }
 
     // Useful middleware
@@ -81,29 +105,42 @@ public class WebpackServer {
                 .next(CustomHandlers::gzip)
                 .next(ex -> CustomHandlers.accessLog(ex, log))
                 .next(CustomHandlers::statusCodeMetrics)
-                .next(WebpackServer::exceptionHandler)
+                .next(Server::exceptionHandler)
                 .complete(handler);
     }
+
 
     // Simple routing, anything not matching a route will fall back
     // to the not found handler.
     private static final HttpHandler ROUTES = new RoutingHandler()
-            .get("/", timed("home", WebpackServer::home))
-            .get("/hello", timed("hello", WebpackServer::hello))
+            .get("/", timed("home", Server::home))
+            .get("/hello", timed("hello", Server::hello))
+
+            .get("/private", timed("private",  SecurityHandler.build(new HttpHandler() {
+                @Override
+                public void handleRequest(HttpServerExchange exchange) throws Exception {
+                    exception(exchange);
+
+                    String name = Exchange.queryParams()
+                            .queryParam(exchange, "name")
+                            .filter(s -> !Strings.isNullOrEmpty(s))
+                            .orElse("world");
+                    Response response = Response.create()
+                            .with("name", name);
+                    Exchange.body().sendHtmlTemplate(exchange, "static/templates/src/hello", response);
+                }
+            }, Env.getConfig(), "VkClients")))
             .get("/static*", timed("static", CustomHandlers.resource("")))
-            .setFallbackHandler(timed("notfound", WebpackServer::notFound))
-            ;
+            .setFallbackHandler(timed("notfound", Server::notFound));
 
     public static void main(String[] args) throws ParseException, IOException {
 
         Options opts = Options.parse(args);
-        StationService stationService = new StationService();
-        INotificationService notificationService = new TelegramNotificationService();
-        if (opts.isValid) {
-            TimerTask instance = new ScheduleTask(opts.filters, stationService, notificationService);
-            Timer timer = new Timer();
-            timer.scheduleAtFixedRate(instance, 0, opts.timeout);
-        }
+//        if (opts.isValid) {
+//            TimerTask instance = new ScheduleTask(opts.filters, stationService, notificationService);
+//            Timer timer = new Timer();
+//            timer.scheduleAtFixedRate(instance, 0, opts.timeout);
+//        }
 
 //
 //        get("/admin", (req, res) -> {
@@ -121,9 +158,9 @@ public class WebpackServer {
 //            return gson.toJson(stations);
 //        });
 
+
+
         Injector.put(Options.class, opts);
-        Injector.put(INotificationService.class, notificationService);
-        Injector.put(StationService.class, stationService);
 
 
         SimpleServer server = SimpleServer.simpleServer(wrapWithMiddleware(ROUTES));

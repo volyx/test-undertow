@@ -62,6 +62,7 @@
     configuration file.
     -->
     <logger name="com.stubbornjava.secrets.MySecretPasswordClass" level="WARN"/>
+    <logger name="org.pac4j." level="ALL"/>
 
 </configuration>
         <!-- // {{end:logback}}  -->

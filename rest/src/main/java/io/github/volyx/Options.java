@@ -1,8 +1,5 @@
 package io.github.volyx;
 
-import io.github.volyx.data.TrainFilter;
-import io.github.volyx.data.providers.selenium.pageobjects.results.SeatClasses;
-
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,18 +12,16 @@ import java.util.concurrent.TimeUnit;
 public class Options {
     public boolean isValid;
     public long timeout = TimeUnit.MINUTES.toMillis(1);
-    public List<TrainFilter> filters;
 
     private static List<String> readLines(String file) throws IOException {
         List<String> ret = new ArrayList<String>();
-        InputStream in = new FileInputStream(file);
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        String line = br.readLine();
-        while (line != null) {
-            ret.add(line);
-            line = br.readLine();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
+             String line = br.readLine();
+            while(line !=null) {
+                ret.add(line);
+                line = br.readLine();
+            }
         }
-        in.close();
         return ret;
     }
 
@@ -37,9 +32,9 @@ public class Options {
         Date at = null;
         String by = null;
         String config = null;
-        List<String> classes = new ArrayList<String>();
-        classes.add(SeatClasses.Platzkart);
-        options.filters = new ArrayList<TrainFilter>();
+//        List<String> classes = new ArrayList<String>();
+//        classes.add(SeatClasses.Platzkart);
+//        options.filters = new ArrayList<TrainFilter>();
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-from")) {
                 from = args[i + 1];
@@ -67,23 +62,23 @@ public class Options {
                     to = lines.get(i * 4 + 1);
                     at = new SimpleDateFormat("dd.MM.yyyy").parse(lines.get(i * 4 + 2));
                     by = lines.get(i * 4 + 3);
-                    options.filters.add(new TrainFilter(from, to, at, classes, by));
+//                    options.filters.add(new TrainFilter(from, to, at, classes, by));
                 }
             } catch (IOException e) {
                 System.out.println("Unable to read file " + config);
             }
         } else {
             if (from != null && to != null && at != null) {
-                options.filters.add(new TrainFilter(from, to, at, classes, by));
+//                options.filters.add(new TrainFilter(from, to, at, classes, by));
             }
         }
 
-        if (options.filters.size() == 0) {
-            printUsage();
-            options.isValid = false;
-        } else {
-            options.isValid = true;
-        }
+//        if (options.filters.size() == 0) {
+//            printUsage();
+//            options.isValid = false;
+//        } else {
+//            options.isValid = true;
+//        }
 
         return options;
     }
